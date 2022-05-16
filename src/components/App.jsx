@@ -6,6 +6,7 @@ import { Searchbar } from "./Searchbar";
 import { ImageGallery } from "./ImageGallery";
 import { Loader } from "./Loader";
 import { Button } from "./Button";
+import { Modal } from "./Modal";
 
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '25800481-71cffbd2e779364a85bf72062';
@@ -16,7 +17,9 @@ export class App extends Component {
     images: [],
     loading: false,
     error: null,
-    page: 1
+    page: 1,
+    showModal: false,
+    largeImg: null
   }
   componentDidUpdate(prevProps, prevStates) { 
     const nextName = this.state.imageName;
@@ -80,15 +83,23 @@ export class App extends Component {
       .catch((error) => this.fetchError(error))
       .finally(() => this.setState({ loading: false }))
   }
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  };
+  handleForModal = event => {
+    this.setState({ largeImg: event.target.alt });
+    this.toggleModal();
+  };
   render() { 
-    const {images, loading } = this.state;
+    const {images, loading, largeImg, showModal } = this.state;
     return (
       <div className={ style.app}>
         <ToastContainer />
         <Searchbar onSubmit={this.handleFormSubmit} />
         { loading && <Loader />}
-        {(images.length !== 0) && <ImageGallery images={images} />}
-        {(images.length !== 0) && <Button  handleButton={this.handleButton} />}
+        {(images.length !== 0) && <ImageGallery images={images} onClick={this.handleForModal}/>}
+        {(images.length !== 0) && <Button handleButton={this.handleButton} />}
+        {showModal &&<Modal largeImg={largeImg} onClose={this.toggleModal} />}
       </div>
     )
   }
