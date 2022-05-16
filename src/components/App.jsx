@@ -15,7 +15,8 @@ export class App extends Component {
     imageName: '',
     images: [],
     loading: false,
-    error: null
+    error: null,
+    page: 1
   }
   componentDidUpdate(prevProps, prevStates) { 
     const nextName = this.state.imageName;
@@ -44,11 +45,12 @@ export class App extends Component {
             })
             .catch((error) => this.fetchError(error))
             .finally(() => this.setState({ loading: false }))
-        },1000);
+        }, 1000);
+        this.setState(prev => ({ page: prev.page + 1 }));
         }
     }
   handleFormSubmit = (imageName) => { 
-    this.setState({ imageName: imageName });
+    this.setState({ imageName: imageName, });
   }
   fetchError = (error) => { 
     this.setState({
@@ -56,6 +58,27 @@ export class App extends Component {
       error: error
     })
     toast.error(error.message);
+  }
+  handleButton = () => {
+    this.setState(prev => ({
+      loading: true,
+      page: prev.page + 1
+    }));
+    const { imageName, page } = this.state;
+    fetch(`${BASE_URL}?q=${imageName}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
+            .then(response => {
+              if (response.ok) {
+                return response.json();
+              }
+              return Promise.reject(
+                new Error('Images not found. Please enter a valid value'),
+              );
+            })
+      .then(images => {
+        this.setState(prev => ({ images: [...prev.images,...images.hits] }) );
+      })
+      .catch((error) => this.fetchError(error))
+      .finally(() => this.setState({ loading: false }))
   }
   render() { 
     const {images, loading } = this.state;
@@ -65,7 +88,7 @@ export class App extends Component {
         <Searchbar onSubmit={this.handleFormSubmit} />
         { loading && <Loader />}
         {(images.length !== 0) && <ImageGallery images={images} />}
-        {(images.length !== 0) && <Button />}
+        {(images.length !== 0) && <Button  handleButton={this.handleButton} />}
       </div>
     )
   }

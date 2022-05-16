@@ -1,14 +1,15 @@
 import { Component } from "react";
 import {toast } from 'react-toastify';
 import style from './searchbar.module.css';
+import PropTypes from 'prop-types';
 
 export class Searchbar extends Component {
     state = { 
         imageName: '',
     }
-    // static propTypes = {
-    //     onSubmit: PropTypes.func.isRequired,
-    // }
+    static propTypes = {
+        onSubmit: PropTypes.func.isRequired,
+    }
     handleInputChange = (event) => { 
         this.setState({imageName: event.currentTarget.value.toLowerCase()});
     }
