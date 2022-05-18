@@ -13,7 +13,7 @@ export const ImageGallery = ({ images, onClick})=>{
 }
 
 ImageGallery.propTypes = {
-    array: PropTypes.arrayOf(PropTypes.shape({
+    images: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number.isRequired,
         webformatURL: PropTypes.string.isRequired,
         largeImageURL: PropTypes.string.isRequired,
